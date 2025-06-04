@@ -68,7 +68,6 @@ Linear(64 → compressed_dim)
 
 We tested the effect of NEFTune on compressed representations using various `alpha` values:
 
-```
 | Model               | α    | MSE     | MAE     | Pearson | Spearman |
 |--------------------|------|---------|---------|---------|----------|
 | **Baseline**        | 0.0  | 0.0720  | 0.2034  | 0.7310  | 0.7750   |
@@ -76,7 +75,6 @@ We tested the effect of NEFTune on compressed representations using various `alp
 | twin_cd32_alpha0.75 | 0.75 | 0.0720  | 0.2009  | 0.7738  | **0.8185** |
 | twin_cd32_alpha1.0  | 1.0  | 0.0823  | 0.2151  | 0.7481  | 0.7984   |
 | twin_cd32_alpha3.0  | 3.0  | 0.1538  | 0.2987  | 0.6475  | 0.7622   |
-```
 
 ### 🏆 Key Insights
 
