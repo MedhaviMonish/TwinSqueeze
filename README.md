@@ -1,6 +1,33 @@
 # 🧠 TwinSqueeze: Contrastive Compression with NEFTune Regularization
 
-**TwinSqueeze** is a Siamese network designed to compress high-dimensional sentence embeddings (e.g., 384-dim from MiniLM) into a smaller, task-optimized vector (e.g., 32-dim) while improving cosine similarity based on the domain/task. This project also systematically studies **NEFTune**, a simple noise-based regularization strategy, by analyzing its effect on generalization and ranking quality.
+**TwinSqueeze** is a Siamese network designed to compress high-dimensional sentence embeddings (e.g., 384-dim from MiniLM) into a smaller, task-optimized vector (e.g., 32-dim) while preserving cosine similarity. This project also systematically studies **NEFTune**, a simple noise-based regularization strategy, by analyzing its effect on generalization and ranking quality.
+
+---
+
+## 🎯 Goals
+
+1. **Compress Embedding Vectors**  
+   Reduce dimensionality (e.g. 384 → 32) to improve:
+   - **Latency in RAG pipelines**
+   - **Memory usage in embedding storage**
+   - **Speed of ANN vector search** for tools like FAISS, qdrant, or custom indexers
+
+2. **Task-Aligned Similarity**  
+   Along with preserving raw sentence similarity, TwinSqueeze is trained to:
+   - Compress embeddings to **reflect domain/task-specific cosine similarity**
+   - Optimize for **ranking alignment** (Spearman) — crucial for information retrieval
+   - Modify similarity depending on your use case, improving results for custom RAG needs
+
+3. **Plug-and-Play for Custom RAG Systems**  
+   TwinSqueeze can be integrated into:
+   - 🔹 **Voyager-like local memory agents** to compress thought/action logs
+   - 🔹 **Local blog/document retrievers** to reduce storage and maintain performance
+   - 🔹 Any **custom RAG pipeline** to:
+     - Decrease search/query cost
+     - Improve ranking robustness (via NEFTune)
+     - Handle noisy input or noisy memory gracefully
+
+> 📌 If you're building your own agent memory or domain-specific retriever, TwinSqueeze helps scale similarity logic without depending on external APIs.
 
 ---
 
@@ -87,13 +114,64 @@ We tested the effect of NEFTune on compressed representations using various `alp
 ## 📊 Visualizations
 
 ### ✅ Training Loss Comparison (all alphas)
-(results/benchmark_charts/loss_cd32_all.png)
+Shows how training loss evolves across epochs for each NEFTune `α` value. Baseline converges faster, but lower noise (α = 0.5, 0.75) still tracks well while improving generalization.
+
+![Training Loss Comparison](results/loss_comparison.png)
+
+---
 
 ### ✅ Per-Model Cosine Prediction vs Ground Truth
-(results/benchmark_charts/twin_cd32_alpha0.5_vs_truth.png)
+Visualizes how predicted cosine similarity aligns with ground truth for the first 50 validation samples. Smoother alignment reflects better ranking behavior.
 
-### ✅ Paper-style Loss Distributions (Train/Test)
-(results/benchmark_charts/loss_compare_alpha_0.5.png)
+- **α = 0.5**
+  
+  ![Alpha 0.5 Cosine Match](results/benchmark_charts/twin_cd32_alpha0.5_vs_truth.png)
+
+- **α = 0.75**
+  
+  ![Alpha 0.75 Cosine Match](results/benchmark_charts/twin_cd32_alpha0.75_vs_truth.png)
+
+- **α = 1.0**
+  
+  ![Alpha 1.0 Cosine Match](results/benchmark_charts/twin_cd32_alpha1.0_vs_truth.png)
+
+- **α = 3.0**
+  
+  ![Alpha 3.0 Cosine Match](results/benchmark_charts/twin_cd32_alpha3.0_vs_truth.png)
+
+- **Baseline**
+  
+  ![Baseline Cosine Match](results/benchmark_charts/twin_cd32_baseline_vs_truth.png)
+
+---
+
+### ✅ Paper-Style Loss Distributions (Train vs Test)
+
+These histograms replicate the visualization style used in the original NEFTune paper. Each pair compares **Baseline** vs NEFTuned model for a specific `α`:
+
+- **α = 0.5**
+
+  ![Loss Compare 0.5](results/benchmark_charts/loss_compare_alpha_0.5.png)
+
+- **α = 0.75**
+
+  ![Loss Compare 0.75](results/benchmark_charts/loss_compare_alpha_0.75.png)
+
+- **α = 1.0**
+
+  ![Loss Compare 1.0](results/benchmark_charts/loss_compare_alpha_1.0.png)
+
+- **α = 3.0**
+
+  ![Loss Compare 3.0](results/benchmark_charts/loss_compare_alpha_3.0.png)
+
+---
+
+### ✅ All Models vs Ground Truth (Comparison Chart)
+
+One chart showing all model predictions overlaid against ground truth, downsampled for clarity.
+
+![All Model Comparison](results/benchmark_charts/all_models_comparison.png)
 
 > 📌 Log-scale histograms show higher training loss for NEFT, but tighter generalization on test set — exactly as shown in the NEFTune paper.
 
@@ -105,6 +183,7 @@ We tested the effect of NEFTune on compressed representations using various `alp
 - How to apply NEFTune noise injection for robustness
 - How to interpret ranking-based vs value-based metrics
 - How to reproduce paper-style visual ablations and histograms
+- How to integrate compressed embeddings into **custom RAG pipelines**
 
 ---
 
@@ -128,8 +207,6 @@ python neftune_loss_overlay.py
 
 ## 📎 Credits
 
-- Inspired by [NEFTune: Noisy Embeddings Improve Fine-tuning](https://arxiv.org/abs/2310.05914)
-- Embedding backbone: [`sentence-transformers/all-MiniLM-L6-v2`](https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2) — Apache License 2.0  
-
-Their use is compliant with their respective licenses.  
-All rights remain with the original authors.
+- Inspired by [NEFTune: Noisy Embeddings Improve Fine-tuning](https://arxiv.org/abs/2305.14995)
+- Embedding backbone: `sentence-transformers/all-MiniLM-L6-v2` (Apache 2.0)
+- Developed by Medhavi Monish
