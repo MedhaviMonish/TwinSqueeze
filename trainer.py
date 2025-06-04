@@ -10,12 +10,19 @@ class TwinSqueezeTrainer:
         self.device = device
         self.loss_log = []
 
-    def train(self, dataloader, epochs: int = 50):
+    def add_neftune_noise(self, embedding, alpha = 0.0):
+        d = embedding.shape[-1]
+        noise = torch.rand_like(embedding) * 2 - 1  # Uniform(-1, 1)
+        scale = alpha / (d ** 0.5)
+        return embedding + noise * scale
+    
+    def train(self, dataloader, epochs: int = 50, alpha: float=0.0):
         self.model.train()
         for epoch in range(epochs):
             total_loss = 0.0
             for emb1, emb2, labels in dataloader:
                 emb1, emb2, labels = emb1.to(self.device), emb2.to(self.device), labels.to(self.device)
+                emb1, emb2 = self.add_neftune_noise(emb1, alpha), self.add_neftune_noise(emb2, alpha)
                 self.optimizer.zero_grad()
                 preds = self.model(emb1, emb2)
                 loss = self.criterion(preds, labels)

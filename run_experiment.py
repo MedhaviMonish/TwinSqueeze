@@ -12,7 +12,7 @@ def run_experiment(compressed_dim=32, alpha=0.0, epochs=50, batch_size=32, lr=2e
     model_name = f"twin_cd{compressed_dim}"+ ("_baseline" if alpha == 0.0 else f"_alpha{alpha}")
 
     # Load data
-    train_dataloader, test_dataloader = load_stsb_data(batch_size=batch_size, alpha=0.0)
+    train_dataloader, test_dataloader = load_stsb_data(batch_size=batch_size)
 
     # Init model and optimizer
     model = TwinSqueeze(compressed_dim=compressed_dim)
@@ -21,7 +21,7 @@ def run_experiment(compressed_dim=32, alpha=0.0, epochs=50, batch_size=32, lr=2e
 
     # Trainer
     trainer = TwinSqueezeTrainer(model, optimizer, criterion, device)
-    trainer.train(train_dataloader, epochs=epochs)
+    trainer.train(train_dataloader, epochs=epochs, alpha=alpha)
 
     # Logging
     logger = ExperimentLogger()
