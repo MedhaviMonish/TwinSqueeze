@@ -235,6 +235,8 @@ python neftune_loss_overlay.py
 
 ## 📎 Credits
 
-- Inspired by [NEFTune: Noisy Embeddings Improve Fine-tuning](https://arxiv.org/abs/2305.14995)
-- Embedding backbone: `sentence-transformers/all-MiniLM-L6-v2` (Apache 2.0)
-- Developed by Medhavi Monish
+- **Inspired by**: [NEFTune: Noisy Embeddings Improve Fine-tuning](https://arxiv.org/abs/2310.05914)
+- **Dataset**: [STS-B (Semantic Textual Similarity Benchmark)](https://gluebenchmark.com/tasks)  
+  from the GLUE Benchmark suite, licensed for academic and research use
+- **Embedding Backbone**: [`sentence-transformers/all-MiniLM-L6-v2`](https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2) (Apache 2.0)
+- **Developed by**: Medhavi Monish
