@@ -24,7 +24,7 @@ class ExperimentLogger:
         header = ["model", "alpha", "compressed_dim", "MSE", "MAE", "Pearson", "Spearman"]
         file_exists = os.path.isfile(csv_path)
 
-        with open(csv_path, mode="a", newline="") as f:
+        with open(csv_path, mode="r", newline="") as f:
             writer = csv.writer(f)
             if not file_exists:
                 writer.writerow(header)

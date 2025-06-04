@@ -1,7 +1,9 @@
 import os
 import numpy as np
+import pandas as pd
 import json
 import torch
+import torch.nn.functional as F
 from model import TwinSqueeze
 from sklearn.metrics import mean_squared_error, mean_absolute_error
 from scipy.stats import pearsonr, spearmanr
@@ -158,6 +160,66 @@ def plot_loss_charts():
     plt.savefig("results/loss_comparison.png")
     plt.close()
 
+def compute_per_sample_losses(model, dataloader, device="cpu"):
+    model.eval()
+    losses = []
+    with torch.no_grad():
+        for emb1, emb2, labels in dataloader:
+            emb1, emb2, labels = emb1.to(device), emb2.to(device), labels.to(device)
+            preds = model(emb1, emb2)
+            per_example_loss = F.mse_loss(preds, labels, reduction='none')
+            losses.extend(per_example_loss.cpu().numpy())
+    return losses
+
+def generate_loss_overlay_per_alpha():
+    device = "cpu"
+    train_loader, test_loader = load_stsb_data(batch_size=64)
+
+    base_model = TwinSqueeze()
+    base_model.load_state_dict(torch.load("models/twin_cd32_baseline.pt", map_location=device))
+    base_train = compute_per_sample_losses(base_model, train_loader, device)
+    base_test = compute_per_sample_losses(base_model, test_loader, device)
+
+    alpha_variants = {
+        "0.5": "twin_cd32_alpha0.5",
+        "0.75": "twin_cd32_alpha0.75",
+        "1.0": "twin_cd32_alpha1.0",
+        "3.0": "twin_cd32_alpha3.0"
+    }
+
+    for alpha, model_name in alpha_variants.items():
+        model = TwinSqueeze()
+        model.load_state_dict(torch.load(f"models/{model_name}.pt", map_location=device))
+        train_losses = compute_per_sample_losses(model, train_loader, device)
+        test_losses = compute_per_sample_losses(model, test_loader, device)
+
+        plt.figure(figsize=(12, 5))
+
+        # Train Loss Comparison
+        plt.subplot(1, 2, 1)
+        plt.yscale("log")
+        plt.hist(base_train, bins=50, alpha=0.6, label="Baseline", color="steelblue", edgecolor="black")
+        plt.hist(train_losses, bins=50, alpha=0.6, label=f"α = {alpha}", color="orange", edgecolor="black")
+        plt.xlabel("Loss (Train)")
+        plt.ylabel("Log Count")
+        plt.title(f"Train Loss: Baseline vs α = {alpha}")
+        plt.legend()
+
+        # Test Loss Comparison
+        plt.subplot(1, 2, 2)
+        plt.yscale("log")
+        plt.hist(base_test, bins=50, alpha=0.6, label="Baseline", color="steelblue", edgecolor="black")
+        plt.hist(test_losses, bins=50, alpha=0.6, label=f"α = {alpha}", color="orange", edgecolor="black")
+        plt.xlabel("Loss (Test)")
+        plt.ylabel("Log Count")
+        plt.title(f"Test Loss: Baseline vs α = {alpha}")
+        plt.legend()
+
+        plt.tight_layout()
+        plt.savefig(f"results/benchmark_charts/loss_compare_alpha_{alpha}.png")
+        plt.close()
+
 if __name__ == "__main__":
     run_all_model_evaluations()           
     plot_loss_charts() 
+    generate_loss_overlay_per_alpha()
