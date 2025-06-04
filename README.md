@@ -121,7 +121,7 @@ Linear(64 → compressed_dim)
 
 ## 🧩 NEFTune Ablation
 
-We tested the effect of NEFTune on compressed representations using various `alpha` values:
+I tested the effect of NEFTune on compressed representations using various `alpha` values:
 
 | Model               | α    | MSE     | MAE     | Pearson | Spearman |
 |--------------------|------|---------|---------|---------|----------|
