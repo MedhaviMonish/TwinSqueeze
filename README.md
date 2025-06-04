@@ -1,6 +1,6 @@
 # 🧠 TwinSqueeze: Contrastive Compression with NEFTune Regularization
 
-**TwinSqueeze** is a Siamese network designed to compress high-dimensional sentence embeddings (e.g., 384-dim from MiniLM) into a smaller, task-optimized vector (e.g., 32-dim) while preserving cosine similarity. This project also systematically studies **NEFTune**, a simple noise-based regularization strategy, by analyzing its effect on generalization and ranking quality.
+**TwinSqueeze** is a Siamese network designed to compress high-dimensional sentence embeddings (e.g., 384-dim from MiniLM) into a smaller, task-optimized vector (e.g., 32-dim) while improving cosine similarity based on the domain/task. This project also systematically studies **NEFTune**, a simple noise-based regularization strategy, by analyzing its effect on generalization and ranking quality.
 
 ---
 
