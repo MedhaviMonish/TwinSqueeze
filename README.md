@@ -31,6 +31,34 @@
 
 ---
 
+### ❗ Why This Project Was Originally Built
+
+This project was originally motivated by the limitations of **OpenAI's 1536-dimensional embeddings**.
+
+While they are powerful, I observed two key problems:
+
+1. **High Dimensionality**  
+   The embeddings are large (1536-dim), leading to:
+   - Slower similarity search
+   - Increased memory usage
+   - Latency in RAG systems and local retrievers
+
+2. **Over-Similarity Between Unrelated Sentences**  
+   For example:
+   ```
+   "Hello" vs "The sky is blue" → ~70% cosine similarity
+   ```
+   This makes them **less usable for fine-grained semantic filtering**, especially in domain-specific applications where similarity should be sparse and meaningful.
+
+**TwinSqueeze** is designed to:
+- Compress large embeddings into smaller, efficient representations (e.g., 32-dim, 64-dim)
+- Retain meaningful similarity rankings
+- Customize similarity alignment for downstream tasks
+
+It is especially useful if you're building a **local RAG system**, **Voyager-style agent memory**, or a **custom document/blog retriever** where control over similarity is essential.
+
+---
+
 ## 🚀 What This Project Does
 
 - ✅ Compresses sentence embeddings using a 3-layer MLP
